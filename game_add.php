@@ -7,7 +7,7 @@ require_post();
 verify_csrf();
 
 $game = game_data_from_post();
-if (text_length($game['title']) < 1 || text_length($game['title']) > 60) {
+if (text_length($game['title']) < 1 || text_length($game['title']) > 151) {
     redirect('dashboard.php?error=title');
 }
 if (!in_array($game['genre'], genres(), true)
@@ -30,7 +30,7 @@ $stmt->execute([
     'title' => $game['title'],
     'genre' => $game['genre'],
     'platform' => $game['platform'],
-    'price' => (int) $price,
+    'price' => $price,
     'stock' => $stock,
     'release_date' => $game['release_date'],
 ]);

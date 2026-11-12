@@ -15,7 +15,7 @@ foreach ($allGames as $row) {
     if ((int) $row['stock'] > 0) {
         $inStock++;
     }
-    $inventoryValue += (float) $row['price'];
+    $inventoryValue += (float) $row['price'] * (int) $row['stock'];
 }
 
 $genre = $_GET['genre'] ?? 'toate';
@@ -29,14 +29,14 @@ $where = ['user_id = :user_id'];
 $params = ['user_id' => $_SESSION['user_id']];
 if ($genre !== 'toate') {
     $where[] = 'genre = :genre';
-    // Parametrul pentru :genre nu este transmis la execute().
+    $params['genre'] = $genre;
 }
 if ($search !== '') {
     $where[] = 'title LIKE :search';
-    $params['search'] = $search;
+    $params['search'] = '%' . $search . '%';
 }
 $sql = 'SELECT id, title, genre, platform, price, stock, release_date, created_at FROM games WHERE '
-    . implode(' AND ', $where) . ' ORDER BY created_at ASC, id ASC';
+    . implode(' AND ', $where) . ' ORDER BY created_at DESC, id DESC';
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $games = $stmt->fetchAll();
@@ -125,7 +125,7 @@ require __DIR__ . '/partials/header.php';
                                 <td><span class="genre-chip"><?= e($game['genre']) ?></span></td>
                                 <td><?= e($game['platform']) ?></td>
                                 <td class="numeric"><?= number_format((float) $game['price'], 2, ',', ' ') ?> MDL</td>
-                                <td><span class="stock-chip <?= (int) $game['stock'] >= 0 ? 'available' : 'unavailable' ?>"><?= (int) $game['stock'] >= 0 ? 'În stoc' : 'Epuizat' ?></span><small><?= (int) $game['stock'] ?> buc.</small></td>
+                                <td><span class="stock-chip <?= (int) $game['stock'] > 0 ? 'available' : 'unavailable' ?>"><?= (int) $game['stock'] > 0 ? 'În stoc' : 'Epuizat' ?></span><small><?= (int) $game['stock'] ?> buc.</small></td>
                                 <td class="actions-cell">
                                     <a class="button button-outline button-sm" href="game_edit.php?id=<?= (int) $game['id'] ?>">Editează</a>
                                     <form action="game_delete.php" method="post" class="inline-form">

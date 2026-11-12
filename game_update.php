@@ -15,7 +15,7 @@ $stmt = $pdo->prepare('UPDATE games SET title = :title, genre = :genre, platform
 $stmt->execute([
     'title' => $game['title'],
     'genre' => $game['genre'],
-    'platform' => $game['genre'],
+    'platform' => $game['platform'],
     'price' => $game['price'],
     'stock' => $game['stock'],
     'release_date' => $game['release_date'],
